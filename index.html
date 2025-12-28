@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情绪强度对比图</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        #chart-container {
+            width: 100%;
+            height: 100vh;
+            min-height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chart-container"></div>
+    
+    <script>
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化ECharts实例
+            const chartDom = document.getElementById('chart-container');
+            const myChart = echarts.init(chartDom);
+            
+            const labelRight = {
+                position: 'right'
+            };
+            
+            // 图表配置
+            const option = {
+                title: {
+                    text: '不婚情绪强度对比图',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function(params) {
+                        const emotionItem = params[0];
+                        const isPositive = emotionItem.value >= 0;
+                        const emotionType = isPositive ? '正面' : '负面';
+                        const showValue = isPositive ? `+${emotionItem.value.toFixed(1)}` : emotionItem.value.toFixed(1);
+                        return `${emotionItem.name} 情绪强度(${emotionType}): ${showValue}`;
+                    },
+                    textStyle: {
+                        fontSize: 12
+                    }
+                },
+                grid: {
+                    top: 80,
+                    bottom: 30,
+                    left: 120,
+                    right: 80
+                },
+                xAxis: {
+                    type: 'value',
+                    position: 'top',
+                    min: -100,
+                    max: 100,
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#eee'
+                        }
+                    },
+                    axisLabel: {
+                        formatter: function(value) {
+                            return value === 0 ? '0' : (value > 0 ? `+${value}` : value);
+                        },
+                        color: '#666'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#999'
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    axisLine: { show: false },
+                    axisLabel: { 
+                        show: true,
+                        color: '#333',
+                        fontSize: 12,
+                        fontWeight: '500'
+                    },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    data: [
+                        '快乐度',
+                        '喜好度',
+                        '惊讶度',
+                        '哀伤度',
+                        '恐惧度',
+                        '愤怒度',
+                        '厌恶度',
+                        '压力度'
+                    ]
+                },
+                series: [
+                    {
+                        name: '情绪强度',
+                        type: 'bar',
+                        stack: 'Total',
+                        label: {
+                            show: true,
+                            formatter: function(params) {
+                                const isPositive = params.value >= 0;
+                                return isPositive ? `+${params.value.toFixed(1)}` : `${params.value.toFixed(1)}`;
+                            },
+                            fontSize: 11,
+                            color: '#333',
+                            fontWeight: 'bold'
+                        },
+                        itemStyle: {
+                            color: function(params) {
+                                const isPositive = params.value >= 0;
+                                return isPositive 
+                                    ? new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                        { offset: 0, color: '#ffe0de' },
+                                        { offset: 1, color: '#ffc0be' }
+                                    ])
+                                    : new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                        { offset: 0, color: '#83e1e0' },
+                                        { offset: 1, color: '#62d1d0' }
+                                    ]);
+                            },
+                            borderRadius: [0, 4, 4, 0]
+                        },
+                        data: [
+                            68.5,
+                            62.3,
+                            12.8,
+                            { value: -18.7, label: labelRight },
+                            { value: -15.2, label: labelRight },
+                            { value: -13.5, label: labelRight },
+                            { value: -11.3, label: labelRight },
+                            { value: -19.5, label: labelRight }
+                        ]
+                    }
+                ]
+            };
+            
+            // 设置图表选项
+            myChart.setOption(option);
+            
+            // 窗口大小变化时重绘图表
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+    </script>
+</body>
+</html>
